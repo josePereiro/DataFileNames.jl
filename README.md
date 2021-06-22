@@ -10,9 +10,12 @@ By no, it only includes a functional form.
 
 The main functionality is exporting two methods `dfname` and its "inverse" `parse_dfname`.
 A "dfname" is form from three parts:
-    - head: a chain of values
-    - params: a chain of key:values pairs
-    - ext: a file extension
+
+* **head**: a chain of values
+
+* **params**: a chain of key:values pairs
+
+* **ext**: a file extension
 
 The name is then form as head + params + ext, separated by reserved characters.
 `dfname` will check if all the values and key:values pairs are valid (e.g: do not contain a reserved separator char).
