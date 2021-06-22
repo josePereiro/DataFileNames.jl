@@ -26,7 +26,7 @@ parse_arg
 parse_arg(s::Symbol) = s
 parse_arg(n::Int) = n
 parse_arg(f::Float64) = f
-parse_arg(s::String) = s
+parse_arg(s::AbstractString) = string(s)
 parse_arg(b::Bool) = b
 parse_arg(p::Pair) = p
 parse_arg(pt::NamedTuple) = pt
@@ -82,7 +82,7 @@ function dfname(args...)
         if startswith(slarg, _SEPS[:EXT_SEP])
             ext = slarg 
         elseif length(params_args) > 0
-            ext = string(_SEPS[:EXT_SEP], slarg)
+            ext = isempty(slarg) ? slarg : string(_SEPS[:EXT_SEP], slarg)
         else
             push!(head_args, slarg)
         end
@@ -111,7 +111,7 @@ function dfname(args...)
 
     # --------------------------------------------------------
     # build name
-    cont_strs = [_argstr(arg) for arg in head_args]
+    body_strs = [_argstr(arg) for arg in head_args]
     params_scol = sort!(collect(params_dict); by = first)
     params_strs = [string(k, _SEPS[:PAIR_SEP], v) for (k, v) in params_scol]
     if !isempty(params_strs)
@@ -120,11 +120,14 @@ function dfname(args...)
             join(params_strs, _SEPS[:ELEMT_SEP]), 
             _SEPS[:PARAMS_RSEP]
         )
-        push!(cont_strs, param_str)
+        push!(body_strs, param_str)
     end
-    fname = string(join(cont_strs, _SEPS[:ELEMT_SEP]), ext)
+    filter!(!isempty, body_strs)
+    fname = string(join(body_strs, _SEPS[:ELEMT_SEP]), ext)
     
     # --------------------------------------------------------
     # happyness
     return fname 
 end
+
+dfname(joinp::Vector, args...) = joinpath(joinp..., dfname(args...))

@@ -20,21 +20,25 @@ function _check__SEPS()
     return _SEPS
 end
 
-function _hex_scaped_seps()
-    ks = keys(_SEPS)
+function _hex_scaped_seps(ks = keys(_SEPS))
     escs = _hex_escape(join([_SEPS[k] for k in ks]))
     Dict{Symbol, String}(k => esc for (k, esc) in zip(ks, escs))
 end
 
 # -------------------------------------------------------------------------------------
-# INPUT TYPES
-const INPUT_KEY_TYPES = [Symbol, String]
-const INPUT_VAL_TYPES = [Symbol, Bool, String, Int, Float64]
-const INPUT_PAIRS_TYPES = [Pair, Dict, NamedTuple]
+# RESERVED SEPS
+const _RESERVED_SEPS_KEYS = [:ELEMT_SEP, :PAIR_SEP, :PARAMS_LSEP, :PARAMS_RSEP]
+_reserved_seps() = [_SEPS[S] for S in _RESERVED_SEPS_KEYS]
 
-_iskeyT(k) = any(isa.([k], INPUT_KEY_TYPES))
-_isvalT(v) = any(isa.([v], INPUT_VAL_TYPES))
-_ispairT(p) = any(isa.([p], INPUT_PAIRS_TYPES))
+# -------------------------------------------------------------------------------------
+# INPUT TYPES
+const _INPUT_KEY_TYPES = [Symbol, String]
+const _INPUT_VAL_TYPES = [Symbol, Bool, String, Int, Float64]
+const _INPUT_PAIRS_TYPES = [Pair, Dict, NamedTuple]
+
+_iskeyT(k) = any(isa.([k], _INPUT_KEY_TYPES))
+_isvalT(v) = any(isa.([v], _INPUT_VAL_TYPES))
+_ispairT(p) = any(isa.([p], _INPUT_PAIRS_TYPES))
 
 function _checker(v, isfun, name, types)
     !isfun(v) && 
@@ -44,29 +48,26 @@ function _checker(v, isfun, name, types)
     return v
 end
 
-_check_keyT(k) = _checker(k, _iskeyT, "key", INPUT_KEY_TYPES)
-_check_valT(v) = _checker(v, _isvalT, "value", INPUT_VAL_TYPES)
-_check_pairT(p) = _checker(p, _ispairT, "key:value structure", INPUT_PAIRS_TYPES)
+_check_keyT(k) = _checker(k, _iskeyT, "key", _INPUT_KEY_TYPES)
+_check_valT(v) = _checker(v, _isvalT, "value", _INPUT_VAL_TYPES)
+_check_pairT(p) = _checker(p, _ispairT, "key:value structure", _INPUT_PAIRS_TYPES)
 
 # -------------------------------------------------------------------------------------
 # String validity
-const _VALUE_INVALIDATORS = Char[]
-
-function _set_default_desallowed_chars!()
-    empty!(_VALUE_INVALIDATORS)
-    push!(_VALUE_INVALIDATORS, 
-        (_SEPS[S] for S in [:ELEMT_SEP, :PAIR_SEP, :PARAMS_LSEP, :PARAMS_RSEP])...
-    )
-    _VALUE_INVALIDATORS
-end
+const INVALID_CHARS = Char[]
 
 function _check_str(str::String)
-    any(contains.(str, _VALUE_INVALIDATORS)) && 
-    error("Separator detected at '$str'. Reserved _SEPS $_VALUE_INVALIDATORS")
+
+    reserved_seps = _reserved_seps()
+    any(contains.(str, reserved_seps)) && 
+        error("Separator detected at '$str'. Reserved seps $reserved_seps")
+    any(contains.(str, INVALID_CHARS)) &&
+        error("Invalid char detected '$str'. INVALID_CHARS $INVALID_CHARS")
+    
     return str
 end
 
 # -------------------------------------------------------------------------------------
-const OUTPUT_VAL_TYPES = [Int, Float64, Bool, String] # String must be the last, it is the fallback
+const _OUTPUT_VAL_TYPES = [Int, Float64, Bool, String] # String must be the last, it is the fallback
 
 
