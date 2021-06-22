@@ -97,7 +97,7 @@ function _regex_parse(fname::String)
         head = _get(m, :head), 
         params = _get(m, :params),
         ext = _get(m, :ext), 
-        dfname = _get(m, :dfname),    
+        dfname = _get(m, :dfname)
     )
 end
 
