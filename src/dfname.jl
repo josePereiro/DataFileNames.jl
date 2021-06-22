@@ -61,7 +61,7 @@ function dfname(args...)
         if _isvalT(parg)
             length(params_args) > 0 && 
                 error(
-                    "After the first key:value argument no single value is allowed. ", 
+                    "After the first key:value argument no single value is allowed (except the extension at the end). ", 
                     "Type protocole_desc() for info!"
                 )
             push!(head_args, parg)
@@ -93,7 +93,7 @@ function dfname(args...)
     end
 
     # --------------------------------------------------------
-    # join params to check for collitions
+    # join params to check for collisions
     params_dict = Dict()
     for param_arg in params_args
         param_arg = (param_arg isa Pair) ? [param_arg] : pairs(param_arg)
@@ -104,7 +104,7 @@ function dfname(args...)
             strv = _argstr(cv)
 
             haskey(params_dict, strk) && 
-                error("You have passed two keys that lead to the same string '", strk, "'. Collitions are not allowed")
+                error("You have passed two keys that lead to the same string '", strk, "'. Collisions are not allowed")
             params_dict[strk] = strv
         end
     end
@@ -130,4 +130,5 @@ function dfname(args...)
     return fname 
 end
 
-dfname(joinp::Vector, args...) = joinpath(joinp..., dfname(args...))
+dfname(joinp::Vector{<:AbstractString}, args...) = 
+joinpath(joinp..., dfname(args...))
