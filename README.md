@@ -30,7 +30,7 @@ The key:pair types are `Dict`, `Pair` and `NamedTuple`.
 ```julia
 using DatafileNames
 
-# There are multiple ways that this ork
+# There are multiple ways that this work
 file = dfname("file_head", (;ϵ = rand(), B = "text"), ".jls")
 @show file # file = "file_head [B=text ϵ=7.57e-01].jls"
 
