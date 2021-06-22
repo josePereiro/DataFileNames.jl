@@ -6,7 +6,6 @@
 
 Just a package for pretty naming data files.
 It was inspired on [DrWatson](https://github.com/JuliaDynamics/DrWatson.jl) `savename` functionality.
-By no, it only includes a functional form.
 
 The main functionality is exporting two methods `dfname` and its "inverse" `parse_dfname`.
 A "dfname" is form from three parts:
