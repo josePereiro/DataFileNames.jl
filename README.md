@@ -5,7 +5,7 @@
 ## Description
 
 Just a package for pretty naming data files.
-It was inspired on [DrWatson](https://github.com/JuliaDynamics/DrWatson.jl) `savename` functionality.
+It was inspired on [DrWatson](https://github.com/JuliaDynamics/DrWatson.jl) `savename` utility.
 
 The main functionality is exporting two methods `dfname` and its "inverse" `parse_dfname`.
 A "dfname" is form from three parts:
@@ -24,7 +24,7 @@ The name is then form as head + params + ext, separated by reserved characters.
 ### dfname
 
 We use the types and order of the arguments passed to `dfname` as a way to communicate with the "engine".
-You can use a key:pair type to indicate the end of the head and the start of the params.
+You can use a key:pair type to indicate the end of the `head` and the start of the `params`.
 The key:pair types are `Dict`, `Pair` and `NamedTuple`.
 
 ```julia
@@ -79,11 +79,11 @@ file = dfname("just_head", (;A = 1), (;A = 2), "jpg")
 
 ### parse_arg
 
-As you can see, `Symbol` and `Strings` are parsed similar and `Float64` are represented in scientific notation.
-To change that overwrite the method `parse_arg` for the type of interest.
-The only requirement is that it must return an allowed type.
-If it is not a key:pair type it must be a `Float64`, `Int`, `Bool`, `String` or `Symbol`.
-This also restrict the types of the "keys" and "values" of the pairs.
+As you can see, `Symbol` and `Strings` are parsed similar and `Float64` is represented in scientific notation.
+To change that, overwrite the method `parse_arg` for the type of interest.
+The only requirement is that it must returns an object compatible with the basic types
+[`Float64`, `Int`, `Bool`, `String`, `Symbol`].
+If returns a key:value type, both the `keys` and `values` must be basic types.
 
 An example using a custom type
 
@@ -100,7 +100,7 @@ foo = Foo(1.0, 1, "hi")
 file = dfname("head", foo, (;A = 1), "png")
 @show file # file = "head [A=1 f=1.00e+00 i=1 s=hi].png"
 
-# Note that in this example the type is implicitly converted into a key:pair type (a `NamedTuple`) a so it must behave as one.
+# Note that in this example the type is implicitly converted into a key:pair type (a `NamedTuple`) and so it must behave as one.
 file = dfname("head", foo, "not_a_pair", "png")
 # ERROR: LoadError: After the first key:value argument no single value is allowed (except the extension at the end). [...]
 ```
