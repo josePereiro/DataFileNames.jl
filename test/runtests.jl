@@ -83,6 +83,15 @@ using Test
     # ------------------------------------------
     # Parsing
     @info("Testing parse_dfname")
+    let
+        head = "dat"
+        ext = ".jls"
+        fname = dfname(head, ext)
+        par_head, par_params, par_ext = DFN.parse_dfname(fname)
+        @test head in par_head
+        @test ext == par_ext
+    end
+
     for it in 1:100
         head = [rand(-5:10), "Hello", rand()]
         params = (;S = "string", F = rand(), I = rand(-10:10))

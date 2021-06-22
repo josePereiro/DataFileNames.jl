@@ -20,19 +20,14 @@ end
 function isvalid_dfname(dfn::String)
     dfn = basename(dfn)
     m = _parse_regex(dfn)
-    m.dfname == dfn
-end
-
-# -------------------------------------------------------------------------------------
-function parse_groups(dfn::String)
-    dfn = basename(dfn)
-    m = _parse_regex(dfn)
-    (;m.head, m.params, m.ext)
+    isempty(m.digest)
 end
 
 # -------------------------------------------------------------------------------------
 function parse_dfname(dfn::String)
-    head_str, params_str, ext_str = parse_groups(dfn)
+    dfn = basename(dfn)
+    head_str, params_str, ext_str, digest = _parse_regex(dfn)
+    !isempty(digest) && error("Invalid name '", dfn, "'. Digest: '", digest, "'")
     
     keepempty = false
     head_split = split(head_str, _SEPS[:ELEMT_SEP]; keepempty) .|> string
@@ -44,4 +39,6 @@ function parse_dfname(dfn::String)
         ext = string(ext_str)
     )
 end
+
+tryparse_dfname(dfn::String) = try; parse_dfname(dfn); catch nothing end
 

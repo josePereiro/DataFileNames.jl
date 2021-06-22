@@ -1,3 +1,5 @@
+
+
 # -------------------------------------------------------------------------------------
 _REGEXS = Dict()
 function _set_regexs!()
@@ -13,55 +15,74 @@ function _set_regexs!()
 
     # inval_chars
     inval_chars = [hex_plsep, hex_prsep, hex_elsep, hex_psep]
-    inval_char_rstr = "[^$(join(inval_chars))]"
+    val_char_rstr = "[^$(join(inval_chars))]"
+    noextsep_char_rstr = "[^$(join([inval_chars; hex_extsep]))]"
 
-    # head
-    head_rstr = 
-        string(
-            "^(?<head>",
-                "(?:",
-                    "$(inval_char_rstr)+(?:$(hex_elsep)|\$|$(hex_extsep))", 
-                ")*",
-            ")?"
-        )
+    # ------------------------------------------------------------
+    # EXT
+    ext_rstr = string(
+        "(?<extstr>",
+            "$(hex_extsep)$(noextsep_char_rstr)*\$",
+        ")",
+    )
+    _REGEXS[:EXT_SPLIT_REGEX] = Regex(ext_rstr)
     
-    # params
-    params_rstr = 
-        string(
-            "(?<paramgroup>", 
-                "$(hex_plsep)",
-                    "(?<params>", 
-                        "(?:$(inval_char_rstr)+$(hex_psep)$(inval_char_rstr)+$(hex_elsep))*",
-                        "(?:$(inval_char_rstr)+$(hex_psep)$(inval_char_rstr)+)+", 
-                    ")",
-                "$(hex_prsep)",
-            ")?"
-        )
-
-    # ext
-    ext_rstr = "(?<ext>$(hex_extsep)$(inval_char_rstr)*)?\$"
-
-    # dfname regex
-    dfname_rstr = string("(?<dfname>", head_rstr, params_rstr, ext_rstr, ")")
-    dfname_r = Regex(dfname_rstr)
-
-    _REGEXS[:DFNAME_REGEX] = dfname_r
+    # ------------------------------------------------------------
+    # HEAD # IMPORTANT!!! it assumes the extension is being removed
+    head_rstr = string(
+        "^",
+        "(?<headstr>", 
+            "(?:", 
+                "$(val_char_rstr)+", 
+                "(?:$(hex_elsep)|\$)", 
+            ")*", 
+        ")", 
+    )
+    _REGEXS[:HEAD_SPLIT_REGEX] = Regex(head_rstr)
+    
+    # ------------------------------------------------------------
+     # PARAMS # IMPORTANT!!! it assumes the extension is being removed
+     params_rstr = string(
+        "$(hex_plsep)",
+            "(?<paramstr>", 
+                "(?:$(val_char_rstr)+$(hex_psep)$(val_char_rstr)+$(hex_elsep)?)+",
+            ")",
+        "$(hex_prsep)", 
+        "\$"
+    )
+    _REGEXS[:PARAMS_SPLIT_REGEX] = Regex(params_rstr)
 
 end
+
+
+
 # -------------------------------------------------------------------------------------
 function _parse_regex(fname::String)
     _check__SEPS()
-    
-    # matchs
     _set_regexs!()
-    m = match(_REGEXS[:DFNAME_REGEX], fname)
 
     _get(m, gk) = haskey(m, gk) ? m[gk] : ""
     _get(m::Nothing, gk) = ""
-    return (;
-        head = _get(m, :head), 
-        params = _get(m, :params),
-        ext = _get(m, :ext), 
-        dfname = _get(m, :dfname)
-    )
+    
+    # remove ext
+    ext_r = _REGEXS[:EXT_SPLIT_REGEX]
+    m = match(ext_r, fname)
+    extstr = _get(m, :extstr)
+    fname = replace(fname, ext_r => "")
+    
+    # remove head
+    head_r = _REGEXS[:HEAD_SPLIT_REGEX]
+    m = match(head_r, fname)
+    headstr = _get(m, :headstr)
+    fname = replace(fname, head_r => "")
+    
+    # remove param body
+    param_r = _REGEXS[:PARAMS_SPLIT_REGEX]
+    m = match(param_r, fname)
+    paramsstr = _get(m, :paramstr)
+    fname = replace(fname, param_r => "")
+    
+    digest = fname
+    return (;headstr, paramsstr, extstr, digest)
 end
+
