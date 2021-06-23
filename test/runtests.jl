@@ -117,5 +117,18 @@ using Test
 
         @test dfname(head..., params, ext) == dfname(par_head..., par_params, par_ext)
     end
+    println()
+
+    # ------------------------------------------
+    # Create file
+    @info("Testing creating a file")
+    let
+        file = dfname([tempdir()], "dat", (;I = rand(Int), F = rand()), "jls")
+        @assert !isfile(file)
+        @show file
+        touch(file)
+        @test isfile(file)
+    end
+    
 
 end
