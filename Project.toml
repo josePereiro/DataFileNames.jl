@@ -1,7 +1,7 @@
 name = "DataFileNames"
 uuid = "82dba31a-8ab6-430f-a22d-9cbb81344561"
 authors = ["josePereiro <jose.pereiro.lab@gmail.com> and contributors"]
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
