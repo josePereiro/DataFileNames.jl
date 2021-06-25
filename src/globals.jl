@@ -33,7 +33,7 @@ _reserved_seps() = [_SEPS[S] for S in _RESERVED_SEPS_KEYS]
 # -------------------------------------------------------------------------------------
 # INPUT TYPES
 const _INPUT_KEY_TYPES = [Symbol, String]
-const _INPUT_VAL_TYPES = [Symbol, Bool, String, Int, Float64]
+const _INPUT_VAL_TYPES = [Symbol, Bool, AbstractString, Integer, AbstractFloat]
 const _INPUT_PAIRS_TYPES = [Pair, Dict, NamedTuple]
 
 _iskeyT(k) = any(isa.([k], _INPUT_KEY_TYPES))

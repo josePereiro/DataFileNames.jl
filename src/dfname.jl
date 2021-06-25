@@ -24,8 +24,8 @@ fname = dfname("my_foo", foo, ".ext")
 """
 parse_arg
 parse_arg(s::Symbol) = s
-parse_arg(n::Int) = n
-parse_arg(f::Float64) = f
+parse_arg(n::Integer) = n
+parse_arg(f::AbstractFloat) = f
 parse_arg(s::AbstractString) = string(s)
 parse_arg(b::Bool) = b
 parse_arg(p::Pair) = p
@@ -36,9 +36,9 @@ parse_arg(v::Any) = error("parse_arg(v::", typeof(v), ") not implemented. Type `
 # -------------------------------------------------------------------------------------
 # _argstr
 _argstr(s::Symbol) = _check_str(string(s))
-_argstr(n::Int) = _check_str(string(n))
-_argstr(f::Float64) = _check_str(@sprintf("%0.2e", f))
-_argstr(s::String) = _check_str(s)
+_argstr(n::Integer) = _check_str(string(n))
+_argstr(f::AbstractFloat) = _check_str(@sprintf("%0.2e", f))
+_argstr(s::AbstractString) = _check_str(string(s))
 _argstr(b::Bool) = _check_str(string(b))
 
 # -------------------------------------------------------------------------------------
@@ -130,5 +130,8 @@ function dfname(args...)
     return fname 
 end
 
+dfname() = ""
+dfname(fname::String) = 
+    isvalid_dfname(basename(fname)) ? fname : dfname(fname)
 dfname(joinp::Vector{<:AbstractString}, args...) = 
-joinpath(joinp..., dfname(args...))
+    joinpath(joinp..., dfname(args...))

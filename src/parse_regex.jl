@@ -20,12 +20,20 @@ function _set_regexs!()
 
     # ------------------------------------------------------------
     # EXT
-    ext_rstr = string(
+    short_ext_rstr = string(
         "(?<extstr>",
             "$(hex_extsep)$(noextsep_char_rstr)*\$",
         ")",
     )
-    _REGEXS[:EXT_SPLIT_REGEX] = Regex(ext_rstr)
+    _REGEXS[:SHORT_EXT_SPLIT_REGEX] = Regex(short_ext_rstr)
+    
+    long_ext_rstr = string(
+        "$(hex_prsep)", 
+        "(?<extstr>",
+            "(?:$(hex_extsep)$(noextsep_char_rstr)*)*\$",
+        ")",
+    )
+    _REGEXS[:LONG_EXT_SPLIT_REGEX] = Regex(long_ext_rstr)
     
     # ------------------------------------------------------------
     # HEAD # IMPORTANT!!! it assumes the extension is being removed
@@ -65,10 +73,18 @@ function _parse_regex(fname::String)
     _get(m::Nothing, gk) = ""
     
     # remove ext
-    ext_r = _REGEXS[:EXT_SPLIT_REGEX]
+    # try long
+    ext_r = _REGEXS[:LONG_EXT_SPLIT_REGEX]
     m = match(ext_r, fname)
     extstr = _get(m, :extstr)
-    fname = replace(fname, ext_r => "")
+    if isempty(extstr)
+        # try short
+        ext_r = _REGEXS[:SHORT_EXT_SPLIT_REGEX]
+        m = match(ext_r, fname)
+        extstr = _get(m, :extstr)
+    end
+    replace_r = Regex("$(extstr)\$")
+    fname = replace(fname, replace_r => "")
     
     # remove head
     head_r = _REGEXS[:HEAD_SPLIT_REGEX]

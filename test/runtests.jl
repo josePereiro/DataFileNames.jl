@@ -21,7 +21,8 @@ using Test
 
     # ------------------------------------------
     @info("Testing 'dfname' produces 'isvalid_dfname' names")
-    fnames = [
+
+    for fn in [
         dfname("dat"), 
         dfname("dat", "test"), 
         dfname("dat", ".png"), 
@@ -32,12 +33,12 @@ using Test
         dfname("dat", (;A = :v1), "png"), 
         dfname(["dir1", "dir2"], "dat", (;A = :v1), "png")
     ]
-
-    for fn in fnames
         isvalid = DFN.isvalid_dfname(fn)
         @info("Testing", fn, isvalid)
         @test isvalid
     end
+    @test dfname() == ""
+    @test dfname("") == ""
     println()
 
     # ------------------------------------------
