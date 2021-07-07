@@ -14,6 +14,7 @@ module DataFileNames
     VERSION < v"1.6" && include("compat.jl")
 
     function __init__()
-        _set_default__SEPS!()
+        _set_default_SEPS!()
+        _set_regexs!()
     end
 end

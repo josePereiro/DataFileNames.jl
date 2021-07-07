@@ -2,7 +2,7 @@
 # _SEPS
 const _SEPS = Dict{Symbol, Char}()
 
-function _set_default__SEPS!()
+function _set_default_SEPS!()
     empty!(_SEPS)
     _SEPS[:EXT_SEP] = '.'
     _SEPS[:PAIR_SEP] = '='

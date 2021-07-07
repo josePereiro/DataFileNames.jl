@@ -8,7 +8,7 @@ using Test
 
     # ------------------------------------------
     # Use default SEPS (mainly because ext sepataror)
-    DFN._set_default__SEPS!()
+    DFN._set_default_SEPS!()
     
     # ------------------------------------------
     @info("Testing _hex_escape")
