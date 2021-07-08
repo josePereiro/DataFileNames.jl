@@ -1,7 +1,7 @@
 
 
 # -------------------------------------------------------------------------------------
-_REGEXS = Dict()
+const _REGEXS = Dict()
 function _set_regexs!()
     empty!(_REGEXS)
 
@@ -67,7 +67,6 @@ end
 # -------------------------------------------------------------------------------------
 function _parse_regex(fname::String)
     _check__SEPS()
-    _set_regexs!()
 
     _get(m, gk) = haskey(m, gk) ? m[gk] : ""
     _get(m::Nothing, gk) = ""
