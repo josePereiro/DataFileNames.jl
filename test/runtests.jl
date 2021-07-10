@@ -1,6 +1,5 @@
 using DataFileNames
-import DataFileNames: parse_arg
-const DFN = DataFileNames
+import DataFileNames: parse_arg, _hex_escape, _set_default_SEPS!
 using Random
 using Test
 
@@ -8,13 +7,13 @@ using Test
 
     # ------------------------------------------
     # Use default SEPS (mainly because ext sepataror)
-    DFN._set_default_SEPS!()
+    _set_default_SEPS!()
     
     # ------------------------------------------
     @info("Testing _hex_escape")
     for i in 1:100
         str = randstring(rand(5:10))
-        r = Regex(join(DFN._hex_escape(str)))
+        r = Regex(join(_hex_escape(str)))
         @test occursin(r, str)
     end
     println()
@@ -33,7 +32,7 @@ using Test
         dfname("dat", (;A = :v1), "png"), 
         dfname(["dir1", "dir2"], "dat", (;A = :v1), "png")
     ]
-        isvalid = DFN.isvalid_dfname(fn)
+        isvalid = isvalid_dfname(fn)
         @info("Testing", fn, isvalid)
         @test isvalid
     end
@@ -76,7 +75,7 @@ using Test
     end
     foo = Foo(1.0, 1, "hi")
     
-    DFN.parse_arg(f::Foo) = (;f.f, f.i, f.s)
+    DataFileNames.parse_arg(f::Foo) = (;f.f, f.i, f.s)
     @test dfname(foo) == dfname(parse_arg(foo))
     @test dfname("bla", foo) == dfname("bla", parse_arg(foo))
     println()
@@ -88,7 +87,7 @@ using Test
         head = "dat"
         ext = ".jls"
         fname = dfname(head, ext)
-        par_head, par_params, par_ext = DFN.parse_dfname(fname)
+        par_head, par_params, par_ext = parse_dfname(fname)
         @test head in par_head
         @test ext == par_ext
     end
@@ -98,7 +97,7 @@ using Test
         params = (;S = "string", F = rand(), I = rand(-10:10))
         ext = ".ext"
         fname = dfname(head..., params, ext)
-        par_head, par_params, par_ext = DFN.parse_dfname(fname)
+        par_head, par_params, par_ext = parse_dfname(fname)
 
         _isapprox(s1::String, s2::String) = (s1 == s2)
         _isapprox(v1, v2; atol = 1e-2) = isapprox(v1, v2; atol)
@@ -120,6 +119,10 @@ using Test
     end
     println()
 
+    # ------------------------------------------
+    # Try parse
+    @test tryparse_dfname("Invalid=name") == nothing
+        
     # ------------------------------------------
     # Create file
     @info("Testing creating a file")

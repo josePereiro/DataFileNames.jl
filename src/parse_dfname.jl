@@ -24,10 +24,10 @@ function isvalid_dfname(dfn::String)
 end
 
 # -------------------------------------------------------------------------------------
-function parse_dfname(dfn::String)
+function _parse_dfname(dfn::String, ondigest::Function)
     dfn = basename(dfn)
     head_str, params_str, ext_str, digest = _parse_regex(dfn)
-    !isempty(digest) && error("Invalid name '", dfn, "'. Digest: '", digest, "'")
+    !isempty(digest) && return ondigest(dfn, digest)
     
     keepempty = false
     head_split = split(head_str, _SEPS[:ELEMT_SEP]; keepempty) .|> string
@@ -40,5 +40,15 @@ function parse_dfname(dfn::String)
     )
 end
 
-tryparse_dfname(dfn::String) = try; parse_dfname(dfn); catch nothing end
+_error_ondigest(dfn, digest) = error("Invalid name '", dfn, "'. Digest: '", digest, "'")
+parse_dfname(dfn::String) = _parse_dfname(dfn::String, _error_ondigest)
 
+_nothing_ondigest(dfn, digest) = nothing
+tryparse_dfname(dfn::String) = _parse_dfname(dfn::String, _nothing_ondigest)
+
+## ------------------------------------------------------
+dfheads(dfname::String) = Ass.parse_dfname(dfname)[1]
+dfparams(dfname::String) = Ass.parse_dfname(dfname)[2]
+dfparam(dfname::String, k::String) = dfparams(dfname)[k]
+dfparam(dfname::String, k::String, dft) = get(dfparams(dfname), k, dft)
+dfext(dfname::String) = Ass.parse_dfname(dfname)[3]

@@ -3,7 +3,9 @@ module DataFileNames
     import Printf: @sprintf
 
     export dfname
-    export parse_dfname, tryparse_dfname, isvalid_dfname
+    export parse_dfname, tryparse_dfname
+    export dfheads, dfparams, dfparam, dfext
+    export isvalid_dfname
 
     include("utils.jl")
     include("globals.jl")
