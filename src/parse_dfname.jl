@@ -47,8 +47,8 @@ _nothing_ondigest(dfn, digest) = nothing
 tryparse_dfname(dfn::String) = _parse_dfname(dfn::String, _nothing_ondigest)
 
 ## ------------------------------------------------------
-dfheads(dfname::String) = Ass.parse_dfname(dfname)[1]
-dfparams(dfname::String) = Ass.parse_dfname(dfname)[2]
+dfheads(dfname::String) = parse_dfname(dfname)[1]
+dfparams(dfname::String) = parse_dfname(dfname)[2]
 dfparam(dfname::String, k::String) = dfparams(dfname)[k]
 dfparam(dfname::String, k::String, dft) = get(dfparams(dfname), k, dft)
-dfext(dfname::String) = Ass.parse_dfname(dfname)[3]
+dfext(dfname::String) = parse_dfname(dfname)[3]
