@@ -133,5 +133,5 @@ end
 dfname() = ""
 dfname(fname::String) = 
     isvalid_dfname(basename(fname)) ? fname : dfname(fname)
-dfname(joinp::Vector{<:AbstractString}, args...) = 
-    joinpath(joinp..., dfname(args...))
+dfname(joinp::Vector{<:AbstractString}, dfargs...) = 
+    isempty(dfargs) ? joinpath(joinp...) : joinpath(joinp..., dfname(dfargs...))
