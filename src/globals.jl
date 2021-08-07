@@ -2,6 +2,14 @@
 # _SEPS
 const _SEPS = Dict{Symbol, Char}()
 
+function _filesep()
+    dummy = joinpath("a", "a")
+    reg = Regex("^a(?<sep>.*)a\$")
+    sep = match(reg, dummy)["sep"]
+    (length(sep) != 1) && error("Unsupported file separator")
+    first(sep)
+end
+
 function _set_default_SEPS!()
     empty!(_SEPS)
     _SEPS[:EXT_SEP] = '.'
@@ -10,6 +18,7 @@ function _set_default_SEPS!()
     _SEPS[:PARAMS_LSEP] = '['
     _SEPS[:PARAMS_RSEP] = ']'
     _SEPS[:SEP_SUBST] = '_'
+    _SEPS[:FILE_SEP] = _filesep()
     _check__SEPS()
     return _SEPS
 end
@@ -27,7 +36,7 @@ end
 
 # -------------------------------------------------------------------------------------
 # RESERVED SEPS
-const _RESERVED_SEPS_KEYS = [:ELEMT_SEP, :PAIR_SEP, :PARAMS_LSEP, :PARAMS_RSEP]
+const _RESERVED_SEPS_KEYS = [:ELEMT_SEP, :PAIR_SEP, :PARAMS_LSEP, :PARAMS_RSEP, :FILE_SEP]
 _reserved_seps() = [_SEPS[S] for S in _RESERVED_SEPS_KEYS]
 
 # -------------------------------------------------------------------------------------

@@ -150,7 +150,7 @@ function dfname(args...)
 
     # --------------------------------------------------------
     # build name
-    body_strs = [_argstr(arg) for arg in head_args]
+    head_strs = [_argstr(arg) for arg in head_args]
     params_scol = sort!(collect(params_dict); by = first)
     params_strs = [string(k, _SEPS[:PAIR_SEP], v) for (k, v) in params_scol]
     if !isempty(params_strs)
@@ -159,10 +159,10 @@ function dfname(args...)
             join(params_strs, _SEPS[:ELEMT_SEP]), 
             _SEPS[:PARAMS_RSEP]
         )
-        push!(body_strs, param_str)
+        push!(head_strs, param_str)
     end
-    filter!(!isempty, body_strs)
-    fname = string(join(body_strs, _SEPS[:ELEMT_SEP]), ext)
+    filter!(!isempty, head_strs)
+    fname = string(join(head_strs, _SEPS[:ELEMT_SEP]), ext)
     
     # --------------------------------------------------------
     # happyness
