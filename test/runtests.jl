@@ -59,10 +59,9 @@ using Test
     @test dfname("dat", (;A = 1), ".ext") == dfname("dat", (;A = 1), "ext")
 
     @test basename(dfname(["dir"], "dat")) == "dat"
-    @test dirname(dfname(["dir"], "dat")) == 
-        dirname(joinpath("dir", "dat"))
-    @test dirname(dfname(["dir1", "dir2"], "dat")) == 
-        dirname(joinpath("dir1", "dir2", "dat"))
+    @test dfname(["dir"], "dat") == joinpath("dir", "dat")
+    @test dfname(["dir1", "dir2"], "dat") == joinpath("dir1", "dir2", "dat")
+    @test dfname(["dir1"], ["dir2"], "dat") == joinpath("dir1", "dir2", "dat")
     println()
 
     # ------------------------------------------

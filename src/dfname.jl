@@ -41,55 +41,94 @@ _argstr(f::AbstractFloat) = _check_str(@sprintf("%0.2e", f))
 _argstr(s::AbstractString) = _check_str(string(s))
 _argstr(b::Bool) = _check_str(string(b))
 
+## ----------------------------------------------------------------------------
+# Will extract the first Vector{<:AbstractString} args and makes 
+# them a path and returns the rest
+function _extract_dir(args...)
+    isempty(args) && return ("", args)
+    path = ""
+    for (i, arg) in enumerate(args)
+        !(arg isa Vector{<:AbstractString}) && return (path, args[i:end])
+        for dir in arg
+            path = joinpath(path, dir)
+        end
+    end
+    return (path, tuple())
+end
+
+## ----------------------------------------------------------------------------
+# assumes _extract_dir was already called
+# extract all first _isvalT ignoring the last arg
+function _extract_head(args...)
+    head_args = []
+    isempty(args) && return (head_args, args)
+    lasti = lastindex(args)
+    for (i, arg) in enumerate(args)
+        parg = parse_arg(arg)
+        if ((i != lasti) && _isvalT(parg)); push!(head_args, parg)
+            else; return (head_args, args[i:end])
+        end
+    end
+    return (head_args, tuple(args[lasti]))
+end
+
+# -------------------------------------------------------------------------------------
+# assumes _extract_head was already called
+# extract all first _ispairT
+function _extract_params(args...)
+    params_args = []
+    isempty(args) && return (params_args, args)
+    for (i, arg) in enumerate(args)
+        parg = parse_arg(arg)
+        if _ispairT(parg); push!(params_args, parg)
+            else; return (params_args, args[i:end])
+        end
+    end
+    return (params_args, tuple())
+end
+
+# -------------------------------------------------------------------------------------
+function _extract_ext(args...)
+    len = length(args)
+    for arg in args
+        parg = parse_arg(arg)
+        _isT = _isvalT(parg)
+        # valid ext arg
+        (_isT && len == 1) && return parg 
+        # several args
+        _isT && error(
+            "After the first key:value argument no single value is allowed (except the extension at the end). ", 
+            "Type protocole_desc() for info!"
+        )
+        # here such arg should also fails _ispairT
+        error("parse_arg(a::$(typeof(arg))) returns an invalid type. Use `?parse_arg` for help.")
+    end
+    return "" # default ext
+end
+
 # -------------------------------------------------------------------------------------
 # dfname
 function dfname(args...)
     _check__SEPS()
 
-    head_args = []
-    params_args = []
-
     # --------------------------------------------------------
-    # collect args except last
-    largi = lastindex(args)
-    for argi in eachindex(args)
-        argi == largi && break
-
-        arg = args[argi]
-        parg = parse_arg(arg)
-
-        if _isvalT(parg)
-            length(params_args) > 0 && 
-                error(
-                    "After the first key:value argument no single value is allowed (except the extension at the end). ", 
-                    "Type protocole_desc() for info!"
-                )
-            push!(head_args, parg)
-        elseif _ispairT(parg)
-            push!(params_args, parg)
-        else
-            error("parse_arg(a::$(typeof(arg))) returns an invalid type. Use `?parse_arg` for help.")
-        end
-    end
-
+    # extract args
+    dir, args = _extract_dir(args...)
+    head_args, args = _extract_head(args...)
+    params_args, args = _extract_params(args...)
+    
     # --------------------------------------------------------
     # deal with ext
-    ext = _check_str("")
-    larg = last(args)
-    plarg = parse_arg(larg)
-    if _isvalT(plarg)
-        slarg = _argstr(plarg)
-        if startswith(slarg, _SEPS[:EXT_SEP])
-            ext = slarg 
-        elseif length(params_args) > 0
-            ext = isempty(slarg) ? slarg : string(_SEPS[:EXT_SEP], slarg)
-        else
-            push!(head_args, slarg)
-        end
-    elseif _ispairT(plarg)
-        push!(params_args, plarg)
+    extarg = _extract_ext(args...)
+    sextarg = _argstr(extarg)
+    if startswith(sextarg, _SEPS[:EXT_SEP]) || isempty(sextarg)
+        ext = sextarg
+    elseif length(params_args) > 0
+        ext = string(_SEPS[:EXT_SEP], sextarg)
     else
-        error("parse_arg(a::$(typeof(larg))) returns an invalid type. Use `?parse_arg` for help.")
+        # is not an extension
+        ext = _argstr("")
+        push!(head_args, sextarg)
     end
 
     # --------------------------------------------------------
@@ -127,11 +166,8 @@ function dfname(args...)
     
     # --------------------------------------------------------
     # happyness
-    return fname 
+    return joinpath(dir, fname)
 end
 
 dfname() = ""
-dfname(fname::String) = 
-    isvalid_dfname(basename(fname)) ? fname : dfname(fname)
-dfname(joinp::Vector{<:AbstractString}, dfargs...) = 
-    isempty(dfargs) ? joinpath(joinp...) : joinpath(joinp..., dfname(dfargs...))
+dfname(fname::String) = isvalid_dfname(fname) ? fname : dfname(fname)

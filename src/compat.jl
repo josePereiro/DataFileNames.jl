@@ -1,4 +1,3 @@
-
 import Base
 
 function Base.haskey(m::RegexMatch, name::Symbol)

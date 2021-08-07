@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Now is valid to pass several dirs in separate vectors: `dfname(["dir1"], ["dir2"], args...)`
 - Methods `dfheads`, `dfparams`, `dfparam`, `dfext` added and exported.
 
 ### Fixed
