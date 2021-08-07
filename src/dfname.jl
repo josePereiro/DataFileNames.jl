@@ -166,7 +166,7 @@ function dfname(args...)
     
     # --------------------------------------------------------
     # happyness
-    return joinpath(dir, fname)
+    return isempty(fname) ? dir : joinpath(dir, fname)
 end
 
 dfname() = ""
