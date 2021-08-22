@@ -30,6 +30,7 @@ parse_arg(s::AbstractString) = string(s)
 parse_arg(b::Bool) = b
 parse_arg(p::Pair) = p
 parse_arg(pt::NamedTuple) = pt
+parse_arg(pt::Iterators.Pairs) = parse_arg(Dict(pt...))
 parse_arg(pt::Dict) = pt
 parse_arg(v::Any) = error("parse_arg(v::", typeof(v), ") not implemented. Type `?parse_arg` for help.")
 
@@ -108,12 +109,11 @@ end
 
 # -------------------------------------------------------------------------------------
 # dfname
-function dfname(args...)
+function _dfname(args...)
     _check__SEPS()
 
     # --------------------------------------------------------
     # extract args
-    dir, args = _extract_dir(args...)
     head_args, args = _extract_head(args...)
     params_args, args = _extract_params(args...)
     
@@ -166,8 +166,14 @@ function dfname(args...)
     
     # --------------------------------------------------------
     # happyness
-    return isempty(fname) ? dir : joinpath(dir, fname)
+    return fname
 end
 
-dfname() = ""
-dfname(fname::String) = isvalid_dfname(fname) ? fname : dfname(fname)
+_dfname() = ""
+_dfname(fname::String) = isvalid_dfname(fname) ? fname : _dfname("", fname)
+
+function dfname(args...) 
+    dir, args = _extract_dir(args...)
+    fname = _dfname(args...)
+    isempty(fname) ? dir : joinpath(dir, fname)
+end
