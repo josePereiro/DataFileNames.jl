@@ -6,7 +6,7 @@ function _set_regexs!()
     empty!(_REGEXS)
 
     # escape 
-    ESC_SEPS = _hex_scaped_seps()
+    ESC_SEPS = _hex_escaped_seps()
     hex_plsep = ESC_SEPS[:PARAMS_LSEP]
     hex_prsep = ESC_SEPS[:PARAMS_RSEP]
     hex_elsep = ESC_SEPS[:ELEMT_SEP]

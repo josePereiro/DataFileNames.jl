@@ -4,12 +4,10 @@
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
-[[Random]]
-deps = ["Serialization"]
-uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-
-[[Serialization]]
-uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+[[RegexTools]]
+git-tree-sha1 = "3dc00229a24f2cef9dcd9ec3d09151a0d464c365"
+uuid = "3cb95532-3c78-4535-bbc5-067405b402f6"
+version = "0.2.0"
 
 [[Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"

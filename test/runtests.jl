@@ -1,6 +1,6 @@
 using DataFileNames
-import DataFileNames: parse_arg, _hex_escape, _set_default_SEPS!
-using Random
+import DataFileNames: parse_arg, _set_default_SEPS!
+# using Random
 using Test
 
 @testset "DataFileNames.jl" begin
@@ -8,15 +8,6 @@ using Test
     # ------------------------------------------
     # Use default SEPS (mainly because ext sepataror)
     _set_default_SEPS!()
-    
-    # ------------------------------------------
-    @info("Testing _hex_escape")
-    for i in 1:100
-        str = randstring(rand(5:10))
-        r = Regex(join(_hex_escape(str)))
-        @test occursin(r, str)
-    end
-    println()
 
     # ------------------------------------------
     @info("Testing 'dfname' produces 'isvalid_dfname' names")

@@ -29,10 +29,7 @@ function _check__SEPS()
     return _SEPS
 end
 
-function _hex_scaped_seps(ks = keys(_SEPS))
-    escs = _hex_escape(join([_SEPS[k] for k in ks]))
-    Dict{Symbol, String}(k => esc for (k, esc) in zip(ks, escs))
-end
+_hex_escaped_seps(ks = keys(_SEPS)) = Dict{Symbol, String}(k => hex_escape(_SEPS[k]) for k in ks)
 
 # -------------------------------------------------------------------------------------
 # RESERVED SEPS
