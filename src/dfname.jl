@@ -1,4 +1,4 @@
-# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 # parse_arg
 """
 This is part of the public interface.
@@ -34,7 +34,7 @@ parse_arg(pt::Iterators.Pairs) = parse_arg(Dict(pt...))
 parse_arg(pt::Dict) = pt
 parse_arg(v::Any) = error("parse_arg(v::", typeof(v), ") not implemented. Type `?parse_arg` for help.")
 
-# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 # _argstr
 _argstr(s::Symbol) = _check_str(string(s))
 _argstr(n::Integer) = _check_str(string(n))
@@ -42,7 +42,7 @@ _argstr(f::AbstractFloat) = _check_str(@sprintf("%0.2e", f))
 _argstr(s::AbstractString) = _check_str(string(s))
 _argstr(b::Bool) = _check_str(string(b))
 
-## ----------------------------------------------------------------------------
+## ------------------------------------------------------------------
 # Will extract the first Vector{<:AbstractString} args and makes 
 # them a path and returns the rest
 function _extract_dir(args...)
@@ -57,7 +57,7 @@ function _extract_dir(args...)
     return (path, tuple())
 end
 
-## ----------------------------------------------------------------------------
+## ------------------------------------------------------------------
 # assumes _extract_dir was already called
 # extract all first _isvalT ignoring the last arg
 function _extract_head(args...)
@@ -73,7 +73,7 @@ function _extract_head(args...)
     return (head_args, tuple(args[lasti]))
 end
 
-# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 # assumes _extract_head was already called
 # extract all first _ispairT
 function _extract_params(args...)
@@ -88,7 +88,7 @@ function _extract_params(args...)
     return (params_args, tuple())
 end
 
-# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 function _extract_ext(args...)
     len = length(args)
     for arg in args
@@ -107,7 +107,7 @@ function _extract_ext(args...)
     return "" # default ext
 end
 
-# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 # dfname
 function _dfname(args...)
     _check__SEPS()

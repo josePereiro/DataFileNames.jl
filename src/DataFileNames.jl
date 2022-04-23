@@ -18,6 +18,6 @@ module DataFileNames
 
     function __init__()
         _set_default_SEPS!()
-        _set_regexs!()
+        # _set_regexs!()
     end
 end

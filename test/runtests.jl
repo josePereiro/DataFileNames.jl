@@ -1,31 +1,36 @@
 using DataFileNames
-import DataFileNames: parse_arg, _set_default_SEPS!
+import DataFileNames: parse_arg, _set_default_SEPS!, _SEPS
 # using Random
 using Test
 
-@testset "DataFileNames.jl" begin
+## ------------------------------------------
+# Custom type
+struct Foo
+    f::Float64
+    i::Int
+    s::String
+end
+DataFileNames.parse_arg(f::Foo) = (;f.f, f.i, f.s)
 
-    # ------------------------------------------
-    # Use default SEPS (mainly because ext sepataror)
-    _set_default_SEPS!()
-
+## ------------------------------------------
+function _run_tests()
     # ------------------------------------------
     @info("Testing 'dfname' produces 'isvalid_dfname' names")
 
     for fn in [
-        dfname("dat"), 
-        dfname("dat", "test"), 
-        dfname("dat", ".png"), 
-        dfname("dat", ".gz.tar"), 
-        dfname((;A = rand())), 
-        dfname((;A = rand()), "png"), 
-        dfname("dat", "dyn", (;ϵ = rand(), B = "main")), 
-        dfname("dat", (;A = :v1), "png"), 
-        dfname(["dir1", "dir2"], "dat", (;A = :v1), "png")
-    ]
-        isvalid = isvalid_dfname(fn)
-        @info("Testing", fn, isvalid)
-        @test isvalid
+            dfname("dat"), 
+            dfname("dat", "test"), 
+            dfname("dat", ".png"), 
+            dfname("dat", ".gz.tar"), 
+            dfname((;A = rand())), 
+            dfname((;A = rand()), "png"), 
+            dfname("dat", "dyn", (;ϵ = rand(), B = "main")), 
+            dfname("dat", (;A = :v1), "png"), 
+            dfname(["dir1", "dir2"], "dat", (;A = :v1), "png")
+        ]
+            isvalid = isvalid_dfname(fn)
+            @info("Testing", fn, isvalid)
+            @test isvalid
     end
     @test dfname() == ""
     @test dfname("") == ""
@@ -58,14 +63,8 @@ using Test
     # ------------------------------------------
     # Custom Type
     @info("Custom type")
-    struct Foo
-        f::Float64
-        i::Int
-        s::String
-    end
     foo = Foo(1.0, 1, "hi")
     
-    DataFileNames.parse_arg(f::Foo) = (;f.f, f.i, f.s)
     @test dfname(foo) == dfname(parse_arg(foo))
     @test dfname("bla", foo) == dfname("bla", parse_arg(foo))
     println()
@@ -111,7 +110,7 @@ using Test
 
     # ------------------------------------------
     # Try parse
-    @test tryparse_dfname("Invalid=name") == nothing
+    @test tryparse_dfname("Invalid=name") === nothing
         
     # ------------------------------------------
     # Create file
@@ -123,6 +122,25 @@ using Test
         touch(file)
         @test isfile(file)
     end
-    
+end
+
+## ------------------------------------------
+@testset "DataFileNames.jl" begin
+
+    # ------------------------------------------
+    # Use default SEPS (mainly because ext sepataror)
+    @info("Default separator")
+    _set_default_SEPS!()
+    _run_tests()
+
+    # ------------------------------------------
+    # Test custom separators
+    println("\n"^3)
+    @info("Custom separator")
+    _set_default_SEPS!()
+    _SEPS[:ELEMT_SEP] = _SEPS[:ELEMT_SEP]^2
+    _SEPS[:PARAMS_LSEP] = _SEPS[:PARAMS_LSEP]^2
+    _SEPS[:PARAMS_RSEP] = _SEPS[:PARAMS_RSEP]^2
+    _run_tests()
 
 end
