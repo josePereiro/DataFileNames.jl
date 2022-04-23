@@ -1,7 +1,7 @@
 name = "DataFileNames"
 uuid = "82dba31a-8ab6-430f-a22d-9cbb81344561"
 authors = ["josePereiro <jose.pereiro.lab@gmail.com> and contributors"]
-version = "0.3.7"
+version = "0.4.0"
 
 [deps]
 RegexTools = "3cb95532-3c78-4535-bbc5-067405b402f6"
