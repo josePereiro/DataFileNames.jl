@@ -34,8 +34,10 @@ end
 # end
 
 _noerr(x...) = nothing
-function _parse_dfname(name::String, ondigest::Function)
+function _parse_dfname(dfn::String, ondigest::Function)
     _check__SEPS()
+
+    dfn = basename(dfn)
     
     # containers
     head = []
@@ -43,7 +45,7 @@ function _parse_dfname(name::String, ondigest::Function)
     ext = ""
 
     # empty string
-    isempty(name) && return (;head, params, ext)
+    isempty(dfn) && return (;head, params, ext)
 
     # escape 
     ESC_SEPS = _hex_escaped_seps()
@@ -53,7 +55,7 @@ function _parse_dfname(name::String, ondigest::Function)
     hex_extsep = ESC_SEPS[:EXT_SEP] |> Regex
 
     # first digest
-    dig = split(name, hex_elsep; keepempty = false)
+    dig = split(dfn, hex_elsep; keepempty = false)
     
     # extenssion
     # if "blo<<bla=1>>.ext", extract ".ext"
@@ -72,8 +74,8 @@ function _parse_dfname(name::String, ondigest::Function)
 
     # redigest
     if !isempty(ext)
-        name = name[1:end - length(ext)]
-        dig = split(name, hex_elsep; keepempty = false)
+        dfn = dfn[1:end - length(ext)]
+        dig = split(dfn, hex_elsep; keepempty = false)
     end
 
     # head
@@ -81,7 +83,7 @@ function _parse_dfname(name::String, ondigest::Function)
         startswith(first(dig), hex_plsep) && break
         str = popfirst!(dig)
         str = _check_str(str, _noerr)
-        isnothing(str) && return ondigest(name, dig)
+        isnothing(str) && return ondigest(dfn, dig)
         push!(head, _parse_val(str))
     end
 
@@ -94,7 +96,7 @@ function _parse_dfname(name::String, ondigest::Function)
         end
     end
 
-    !isempty(dig) && return ondigest(name, dig)
+    !isempty(dig) && return ondigest(dfn, dig)
 
     return (;head, params, ext)
 

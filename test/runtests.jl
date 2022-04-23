@@ -75,7 +75,14 @@ function _run_tests()
     let
         head = "dat"
         ext = ".jls"
+
         fname = dfname(head, ext)
+        par_head, par_params, par_ext = parse_dfname(fname)
+        @test head in par_head
+        @test ext == par_ext
+
+        # with dir
+        fname = dfname([@__DIR__], head, ext)
         par_head, par_params, par_ext = parse_dfname(fname)
         @test head in par_head
         @test ext == par_ext
