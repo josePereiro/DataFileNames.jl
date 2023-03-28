@@ -1,3 +1,5 @@
+# TODO: Add struct 'DataFileName' struct for keeping config
+
 module DataFileNames
 
     import Printf: @sprintf
