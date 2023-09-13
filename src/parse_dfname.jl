@@ -12,8 +12,9 @@ function _parse_val(v::AbstractString)
 end
 
 function _parse_pair(p::AbstractString)
-    k, v = split(p, _SEPS[:PAIR_SEP])
-    return (_parse_key(k) => _parse_val(v))
+    dig = split(p, _SEPS[:PAIR_SEP])
+    length(dig) == 2 || return nothing
+    return (_parse_key(first(dig)) => _parse_val(last(dig)))
 end
 
 # -------------------------------------------------------------------
@@ -81,10 +82,11 @@ function _parse_dfname(dfn::String, ondigest::Function)
     # head
     for _ in eachindex(dig)
         startswith(first(dig), hex_plsep) && break
-        str = popfirst!(dig)
+        str = first(dig)
         str = _check_str(str, _noerr)
         isnothing(str) && return ondigest(dfn, dig)
         push!(head, _parse_val(str))
+        popfirst!(dig)
     end
 
     # params
@@ -92,7 +94,11 @@ function _parse_dfname(dfn::String, ondigest::Function)
         dig[1] = replace(dig[1], hex_plsep => "")
         dig[end] = replace(dig[end], hex_prsep => "")
         for _ in eachindex(dig)
-            push!(params, _parse_pair(popfirst!(dig)))
+            str = first(dig)
+            param = _parse_pair(str)
+            isnothing(param) && return ondigest(dfn, dig)
+            push!(params, param)
+            popfirst!(dig)
         end
     end
 
