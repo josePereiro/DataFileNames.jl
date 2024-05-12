@@ -33,6 +33,14 @@ parse_arg(pt::NamedTuple) = pt
 parse_arg(pt::Iterators.Pairs) = parse_arg(Dict(pt...))
 parse_arg(pt::Dict) = pt
 parse_arg(v::Any) = error("parse_arg(v::", typeof(v), ") not implemented. Type `?parse_arg` for help.")
+# A tupple will be hashed
+function parse_arg(pt::Tuple)
+    h = hash(0)
+    for el in pt
+        h = hash(el, h)
+    end
+    return (;hash = repr(h))
+end
 
 # -------------------------------------------------------------------
 # _argstr

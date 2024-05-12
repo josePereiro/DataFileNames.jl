@@ -113,10 +113,17 @@ file = dfname(["dir1", "dir2"], "my_cool_file", (;A = 1), ".jls")
 @show file = # file = "dir1/dir2/my_cool_file [A=1].jls"
 ```
 
+'Simple' tuples are hashed. This is useful for quick unique data based file names.
+
+```julia
+file = dfname("comment", (1,2,3), ".ext")
+@show file = # file = "comment [hash=0x83d91fbc7a900a8f].ext"
+```
+
 To avoid such behavior (if you wanna use a vector as part of the name) use an empty string.
 
 ```julia
-# Empty strings are ignored in the construction of the name but are relevant is the arguments structure. Now the vector is taken as an ordinary argument and `parse_arg(v::Vector{String})` must be implemented
+# Empty strings are ignored in the construction of the name but are relevant in the arguments structure. Now the vector is taken as an ordinary argument and `parse_arg(v::Vector{String})` must be implemented
 file = dfname("", ["dir1", "dir2"], "my_cool_file", (;A = 1), ".jls")
 # ERROR: LoadError: parse_arg(v::Vector{String}) not implemented. Type `?parse_arg` for help.
 ```
